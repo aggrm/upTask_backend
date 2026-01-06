@@ -6,9 +6,9 @@ import { handleInputErrors } from "../middleware/validation";
 const router = Router()
 
 router.post('/', 
-    body('projectName').notEmpty().withMessage('El nombre del proyecto es obligatorio'),
-    body('clientName').notEmpty().withMessage('El nombre del cliente es obligatorio'),
-    body('description').notEmpty().withMessage('La descripcion del proyecto es obligatoria'),
+    body('projectName').notEmpty().withMessage('projectName es obligatorio'),
+    body('clientName').notEmpty().withMessage('clientName es obligatorio'),
+    body('description').notEmpty().withMessage('description es obligatorio'),
     handleInputErrors,
     ProjectController.createProject
 )
@@ -17,6 +17,22 @@ router.get('/', ProjectController.getAllProjects)
 router.get('/:id', 
     param('id').isMongoId().withMessage('ID no valido'),
     handleInputErrors,
-    ProjectController.getProjectById)
+    ProjectController.getProjectById
+)
+
+router.put('/:id', 
+    param('id').isMongoId().withMessage('ID no valido'),
+    body('projectName').notEmpty().withMessage('projectName es obligatorio'),
+    body('clientName').notEmpty().withMessage('clientName es obligatorio'),
+    body('description').notEmpty().withMessage('description es obligatorio'),
+    handleInputErrors,
+    ProjectController.updateProjectById
+)
+
+router.delete('/:id', 
+    param('id').isMongoId().withMessage('ID no valido'),
+    handleInputErrors,
+    ProjectController.deleteProjectById
+)
 
 export default router
