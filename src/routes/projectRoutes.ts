@@ -40,8 +40,14 @@ router.delete('/:id',
 /** Routes for task */
 router.post('/:projectId/tasks',
     validateProjectExist,
+    body('name').notEmpty().withMessage('name es obligatorio'),
+    body('description').notEmpty().withMessage('description es obligatorio'),
+    handleInputErrors,
     TaskController.createTask
 )
 
-
+router.get('/:projectId/tasks',
+    validateProjectExist,
+    TaskController.getProjectTasks
+)
 export default router
