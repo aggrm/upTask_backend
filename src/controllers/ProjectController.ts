@@ -1,4 +1,4 @@
-import { Request, Response } from "express"
+import type { Request, Response } from "express"
 import Project from "../models/Project"
 
 
@@ -62,7 +62,7 @@ export class ProjectController{
                 return res.status(404).json({error: errorr.message})
             }
             await project.deleteOne()
-            res.send('Proyecto actualizado')
+            res.send('Proyecto eliminado')
         } catch (error) {
             console.log(error)
         }
