@@ -32,7 +32,7 @@ const TaskSchema: Schema = new Schema({
         type: Types.ObjectId,
         ref: 'Project'
     },
-    satus:{
+    status:{
         type: String,
         enum: Object.values(taskStatus),
         default: taskStatus.PENDING
