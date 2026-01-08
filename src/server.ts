@@ -12,7 +12,6 @@ connectDB()
 
 const app = express()
 app.use(cors(corsConfig))
-app.use(express.json())
 
 //Habilitando el modelo de JSON para los bodys
 app.use(express.json())
