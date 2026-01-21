@@ -1,13 +1,18 @@
-import { CorsOptions } from "cors"
+import { CorsOptions } from 'cors'
 
 export const corsConfig: CorsOptions = {
-    origin: function(origin, callback){
-        const whiteList= [process.env.FRONTEND_URL]
+  origin: (origin, callback) => {
+    const whiteList = [process.env.FRONTEND_URL]
 
-        if(whiteList.includes(origin)){
-           callback(null, true) 
-        }else{
-            callback(new Error('Error de CORS'))
-        }
+    // Postman, tests, backend-to-backend
+    if (!origin) {
+      return callback(null, true)
     }
+
+    if (whiteList.includes(origin)) {
+      return callback(null, true)
+    }
+
+    return callback(new Error('Not allowed by CORS'))
+  },
 }

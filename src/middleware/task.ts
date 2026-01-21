@@ -25,7 +25,7 @@ export async function taskExists(req: Request, res: Response, next: NextFunction
     }
 }
 
-export async function tasBelongsToProject(req: Request, res: Response, next: NextFunction){
+export async function taskBelongsToProject(req: Request, res: Response, next: NextFunction){
     try {
          if (!req.task.project._id.equals(req.project._id)) {
             const error = new Error('Accion no válida')
