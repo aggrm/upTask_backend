@@ -7,7 +7,7 @@ import { projectExists } from "../middleware/project";
 import { taskBelongsToProject, taskExists } from "../middleware/task";
 
 const router = Router()
-
+console.log('✅ PROJECT ROUTES CARGADAS');
 router.post('/', 
     body('projectName').notEmpty().withMessage('projectName es obligatorio'),
     body('clientName').notEmpty().withMessage('clientName es obligatorio'),
