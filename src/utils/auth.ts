@@ -6,3 +6,7 @@ export const hashPassword = async (password: string) => {
 
     return password
 }
+
+export const chekcPassword = async (enteredPassword: string,  storeHash: string) => {
+    return await bcyrpt.compare(enteredPassword, storeHash)
+}
