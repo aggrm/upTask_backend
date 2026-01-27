@@ -33,4 +33,10 @@ router.post('/login',
   AuthController.login
 )
 
+router.post('/request-code',
+  body('email'). isEmail().withMessage('Correo no válido'),
+  handleInputErrors,
+  AuthController.requestConfirmationCode
+)
+
 export default router
