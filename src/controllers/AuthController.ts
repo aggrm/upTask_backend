@@ -3,7 +3,6 @@ import User from "../models/User"
 import { chekcPassword, hashPassword } from "../utils/auth"
 import Token from "../models/Token"
 import { generateToken } from "../utils/token"
-import { transporter } from "../config/nodemailer"
 import { AutEmail } from "../emails/AuthEmail"
 
 export class AuthController {
@@ -166,6 +165,46 @@ export class AuthController {
             res.send('Revisa tu email para ver las instrucciones')
         } catch (error) {
             res.status(500).json({error: 'Hubo un error'})
+        }
+    }
+
+    static validateToken = async (req: Request, res: Response) => {
+        try {
+            const { token } = req.body
+            
+            const tokenExist = await Token.findOne({ token })
+            if (!tokenExist) {
+                return res.status(404).json({ error: 'Token no valido' })
+            }
+
+            return res.send('Token válido, define tu nuevo password')
+        } catch (error) {
+            return res.status(500).json({ error: 'Hubo un error' })
+        }
+    }
+
+    static updatePasswordWithToken = async (req: Request, res: Response) => {
+        try {
+            
+            const token = req.params.token
+            const { password } = req.body
+            
+            const tokenExist = await Token.findOne({ token })
+            if (!tokenExist) {
+                return res.status(404).json({ error: 'Token no valido' })
+            }
+
+            //Consultar usuario
+            const user = await User.findById(tokenExist.user)
+
+            //Hash Password
+            user.password = await hashPassword(password)
+
+            await Promise.allSettled([user.save(), tokenExist.deleteOne()])
+
+            return res.send('El password se reestablecio correctamente')
+        } catch (error) {
+            return res.status(500).json({ error: 'Hubo un error' })
         }
     }
 }
