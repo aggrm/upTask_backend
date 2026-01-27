@@ -41,25 +41,32 @@ export class AuthController {
     }
 
 
-    static confirmAccount = async(req: Request, res: Response) => {
+    static confirmAccount = async (req: Request, res: Response) => {
         try {
-            const {token} = req.body
-
-            const tokenExist = await Token.findOne({token})
-            if(!tokenExist){
-                const error = new Error('Token no valido')
-                res.status(404).json({error: error.message})
+            const { token } = req.body
+            
+            const tokenExist = await Token.findOne({ token })
+            if (!tokenExist) {
+                return res.status(404).json({ error: 'Token no valido' })
             }
 
             const user = await User.findById(tokenExist.user)
+            if (!user) {
+                return res.status(404).json({ error: 'Usuario no encontrado' })
+            }
+
             user.confirmed = true
 
-            await Promise.allSettled([user.save(), tokenExist.deleteOne()])
-            res.send('Cuenta confirmada correctamente')
+            await Promise.allSettled([
+                user.save(),
+                tokenExist.deleteOne()
+            ])
+
+            return res.send('Cuenta confirmada correctamente')
         } catch (error) {
-            res.status(500).json({error: 'Hubo un error'})
+            return res.status(500).json({ error: 'Hubo un error' })
         }
-    }
+    }   
 
     static login = async(req: Request, res: Response) => {
         try {
