@@ -68,43 +68,49 @@ export class AuthController {
         }
     }   
 
-    static login = async(req: Request, res: Response) => {
-        try {
-            const {email, password} = req.body
-            const user = await User.findOne({email})
+    static login = async (req: Request, res: Response) => {
+    try {
+        const { email, password } = req.body
 
-            console.log(`el usuario es este ${user.email}`)
+        const user = await User.findOne({ email })
 
-            if(!user){
-                const error = new Error('Usario no valido')
-                res.status(404).json({error: error.message})
-            }
-
-            if(!user.confirmed){
-                const token = new Token()
-                token.user = user._id
-                token.token = generateToken()
-                await token.save()
-
-                AutEmail.sendConfirmationEmail({email: user.email, name: user.name, token: token.token})
-
-                const error = new Error('La cuenta no ha sido verificada, se ha enviado un nuevo correo de verifiacción a su email')
-                res.status(401).json({error: error.message})
-            }
-            
-
-            const isPasswordCorrect = await chekcPassword(password, user.password)
-            if(!isPasswordCorrect){
-                const error = new Error('password no valida')
-                res.status(401).json({error: error.message})
-            }
-            
-            res.send('Usuario logado correctamente')
-        } catch (error) {
-            console.log(error)
-            res.status(500).json({error: 'Hubo un error'})
+        //Usuario no existe
+        if (!user) {
+            return res.status(404).json({ error: 'Usuario no encontrado' })
         }
+
+        //Cuenta no confirmada
+        if (!user.confirmed) {
+            const token = new Token()
+            token.user = user._id
+            token.token = generateToken()
+            await token.save()
+
+            AutEmail.sendConfirmationEmail({
+                email: user.email,
+                name: user.name,
+                token: token.token
+            })
+
+            return res.status(401).json({
+                error: 'La cuenta no ha sido verificada, se ha enviado un nuevo correo de verificación'
+            })
+        }
+
+        //Password incorrecta
+        const isPasswordCorrect = await chekcPassword(password, user.password)
+        if (!isPasswordCorrect) {
+            return res.status(401).json({ error: 'Password no valida' })
+        }
+
+        //Login correcto
+        return res.send('Usuario logado correctamente')
+
+    } catch (error) {
+        console.log(error)
+        return res.status(500).json({ error: 'Hubo un error' })
     }
+}
 
     static requestConfirmationCode = async(req: Request, res: Response) => {
         try {
