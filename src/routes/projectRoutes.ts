@@ -5,9 +5,12 @@ import { handleInputErrors } from "../middleware/validation";
 import { TaskController } from "../controllers/TaskController";
 import { projectExists } from "../middleware/project";
 import { taskBelongsToProject, taskExists } from "../middleware/task";
+import { authenticate } from "../middleware/auth";
 
 const router = Router()
 console.log('✅ PROJECT ROUTES CARGADAS');
+
+router.use(authenticate)
 router.post('/', 
     body('projectName').notEmpty().withMessage('projectName es obligatorio'),
     body('clientName').notEmpty().withMessage('clientName es obligatorio'),
@@ -16,7 +19,8 @@ router.post('/',
     ProjectController.createProject
 )
 
-router.get('/', ProjectController.getAllProjects)
+router.get('/', authenticate, ProjectController.getAllProjects)
+
 router.get('/:id', 
     param('id').isMongoId().withMessage('ID no valido'),
     handleInputErrors,
