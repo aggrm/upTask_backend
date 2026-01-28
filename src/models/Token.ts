@@ -15,7 +15,7 @@ const tokenSchema: Schema = new Schema({
         type: Types.ObjectId,
         ref: 'User' 
     },
-    createAt:{
+    expiresAt:{
         type: Date,
         default: Date.now(),
         expires: "5m"
