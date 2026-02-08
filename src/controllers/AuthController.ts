@@ -210,7 +210,46 @@ export class AuthController {
         }
     }
 
-     static user = async (req: Request, res: Response) => {
+    static user = async (req: Request, res: Response) => {
        return res.json(req.user)
+    }
+
+    static updateProfile = async (req: Request, res: Response) => {
+        const { name, email } = req.body
+
+        const userExists = await User.findOne({email})
+
+        if(userExists && userExists._id.toString() !== req.user._id.toString()){
+           return res.status(409).json({ error: 'Ese email ya esta registrado' }) 
+        }
+
+        req.user.name = name
+        req.user.email = email
+
+        try{
+            await req.user.save()
+            res.send('Perfil actualizado correctamente')
+        }catch{
+            return res.status(500).json({ error: 'Hubo un error' })
+        } 
+    }
+
+    static updateCurrentUserPassword = async (req: Request, res: Response) => {
+        const { curent_password,  password, password_confirmation} = req.body
+
+        const user = await User.findById(req.user._id)
+        const isPasswordCorrect = await chekcPassword(curent_password, user.password)
+
+        if(!isPasswordCorrect){
+           return res.status(401).json({ error: 'El pasword actual es incorrecto' }) 
+        }
+
+        try{
+            user.password = await hashPassword(password)
+            await user.save()
+            res.send('Pasword actualizado correctamente')
+        }catch{
+            return res.status(500).json({ error: 'Hubo un error' })
+        } 
     }
 }

@@ -8,54 +8,54 @@ const router = Router()
 console.log('🔥 AUTH ROUTES CARGADAS');
 
 router.post('/create-account', 
-  body('name'). notEmpty().withMessage('El nombre no puede ir vacio'),
-  body('password'). isLength({min: 8}).withMessage('El password es muy corto, minimo 8 caracteres'),
-  body('password_confirmation'). custom((value, {req}) => {
+  body('name').notEmpty().withMessage('El nombre no puede ir vacio'),
+  body('password').isLength({min: 8}).withMessage('El password es muy corto, minimo 8 caracteres'),
+  body('password_confirmation').custom((value, {req}) => {
     if(value !== req.body.password){
       throw new Error('Los Password no coincide')
     }
     return true
   }),
-  body('email'). isEmail().withMessage('Correo no válido'),
+  body('email').isEmail().withMessage('Correo no válido'),
   handleInputErrors,
   AuthController.createAccount
 )
 
 router.post('/confirm-account', 
-  body('token'). notEmpty().withMessage('El token no puede ir vacio'),
+  body('token').notEmpty().withMessage('El token no puede ir vacio'),
   handleInputErrors,
   AuthController.confirmAccount
 )
 
 router.post('/login',
-  body('email'). isEmail().withMessage('Correo no válido'),
-  body('password'). notEmpty().withMessage('El password no puede ir vacio'),
+  body('email').isEmail().withMessage('Correo no válido'),
+  body('password').notEmpty().withMessage('El password no puede ir vacio'),
   handleInputErrors,
   AuthController.login
 )
 
 router.post('/request-code',
-  body('email'). isEmail().withMessage('Correo no válido'),
+  body('email').isEmail().withMessage('Correo no válido'),
   handleInputErrors,
   AuthController.requestConfirmationCode
 )
 
 router.post('/forgot-password',
-  body('email'). isEmail().withMessage('Correo no válido'),
+  body('email').isEmail().withMessage('Correo no válido'),
   handleInputErrors,
   AuthController.forgotPassword
 )
 
 router.post('/validate-token',
-  body('token'). notEmpty().withMessage('El token no puede ir vacio'),
+  body('token').notEmpty().withMessage('El token no puede ir vacio'),
   handleInputErrors,
   AuthController.validateToken
 )
 
 router.post('/update-password/:token',
-  param('token'). isNumeric().withMessage('El token no es valido'),
-  body('password'). isLength({min: 8}).withMessage('El password es muy corto, minimo 8 caracteres'),
-  body('password_confirmation'). custom((value, {req}) => {
+  param('token').isNumeric().withMessage('El token no es valido'),
+  body('password').isLength({min: 8}).withMessage('El password es muy corto, minimo 8 caracteres'),
+  body('password_confirmation').custom((value, {req}) => {
     if(value !== req.body.password){
       throw new Error('Los Password no coincide')
     }
@@ -70,4 +70,26 @@ router.get('/user',
   authenticate,
   AuthController.user
 )
+
+/** Profile routes */
+router.put('/profile',
+  authenticate,
+  body('name').notEmpty().withMessage('El nombre no puede ir vacio'),
+  body('email').isEmail().withMessage('Correo no válido'),
+  handleInputErrors,
+  AuthController.updateProfile
+)
+
+router.post('/update-password',
+  authenticate,
+  body('curent_password').notEmpty().withMessage('El password no puede ir vacio'),
+  body('password').isLength({min: 8}).withMessage('El password es muy corto, minimo 8 caracteres'),
+  body('password_confirmation').custom((value, {req}) => {
+    if(value !== req.body.password){
+      throw new Error('Los Password no coincide')
+    }
+    return true
+  }),
+  handleInputErrors,
+  AuthController.updateCurrentUserPassword)
 export default router
