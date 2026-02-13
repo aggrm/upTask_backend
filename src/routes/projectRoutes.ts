@@ -29,27 +29,31 @@ router.get('/:id',
     ProjectController.getProjectById
 )
 
-router.put('/:id', 
-    param('id').isMongoId().withMessage('ID no valido'),
-    body('projectName').notEmpty().withMessage('projectName es obligatorio'),
-    body('clientName').notEmpty().withMessage('clientName es obligatorio'),
-    body('description').notEmpty().withMessage('description es obligatorio'),
-    handleInputErrors,
-    ProjectController.updateProjectById
-)
-
-router.delete('/:id', 
-    param('id').isMongoId().withMessage('ID no valido'),
-    handleInputErrors,
-    ProjectController.deleteProjectById
-)
-
 /** 
  * 
  * Routes for task 
  * 
  */
 router.param('projectId', projectExists)
+
+router.put('/:projectId', 
+    param('projectId').isMongoId().withMessage('ID no valido'),
+    body('projectName').notEmpty().withMessage('projectName es obligatorio'),
+    body('clientName').notEmpty().withMessage('clientName es obligatorio'),
+    body('description').notEmpty().withMessage('description es obligatorio'),
+    handleInputErrors,
+    hashAuthorization,
+    ProjectController.updateProjectById
+)
+
+router.delete('/:projectId', 
+    param('projectId').isMongoId().withMessage('ID no valido'),
+    handleInputErrors,
+    hashAuthorization,
+    ProjectController.deleteProjectById
+)
+
+
 router.post('/:projectId/tasks',
     hashAuthorization,
     body('name').notEmpty().withMessage('name es obligatorio'),
